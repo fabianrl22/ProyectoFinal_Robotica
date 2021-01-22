@@ -6,6 +6,8 @@ Para lograr la realizacion de este proyecto se tomó en cuanta la formulacion de
 
 ## Control
 
+(https://github.com/fabianrl22/ProyectoFinal_Robotica/blob/master/Captura.JPG)
+
 ### Control de posicion:
 
 Se puede aplicar un controlador de posición usando el paquete ros_control. Para hacer esto, se deben definir varias cosas más en el archivo URDF, incluidas las transmisiones, y un complemento de Gazebo. También es necesario un archivo /*.yaml para configurar el controlador y los archivos de inicio. 
