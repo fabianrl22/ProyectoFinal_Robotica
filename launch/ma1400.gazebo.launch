@@ -1,0 +1,49 @@
+<launch>
+
+    <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find ma1400_sim)/urdf/ma1400/ma1400.urdf.xacro'" />
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    args="-urdf -model ma1400 -param robot_description"/>
+
+    <!-- Spawn joint controllers -->
+  <rosparam command="load" file="$(find ma1400_sim)/launch/ma1400_control_params.yaml"/>
+  <node name="controller_spawner" pkg="controller_manager" type="spawner"
+        respawn="false" output="screen"
+        args="joint_state_controller
+              joint_s_controller
+              joint_l_controller
+              joint_u_controller
+              joint_r_controller
+              joint_b_controller
+              joint_t_controller
+              --timeout 50" />
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher"
+        type="robot_state_publisher" respawn="false" output="screen">
+  </node>
+
+  <!-- run the motoros interface simulator -->
+  <node name="moto_ros_interface" pkg="ma1400_sim" type="moto_ros_interface"
+        output="screen"/>
+
+  <!-- Set joints for joint_trajectory_action. URDF contains joint_tip, which is  not a controlled joint. -->
+  <rosparam param="controller_joint_names">['joint_s', 'joint_l', 'joint_u', 'joint_r', 'joint_b', 'joint_t']</rosparam>
+
+  <!-- Bring up action server -->
+  <node pkg="industrial_robot_client" name="joint_trajectory_action" type="joint_trajectory_action" output="screen">
+    <!-- Set the goal_threshold in radians for each joint. Not sure what this value should be. -->
+    <param name="constraints/goal_threshold" type="double" value="1.0"/>
+  </node>
+  
+  <!-- Not sure what this does -->
+  <node
+    name="fake_joint_calibration"
+    pkg="rostopic"
+    type="rostopic"
+    args="pub /calibrated std_msgs/Bool true" />
+
+</launch>
