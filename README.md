@@ -45,4 +45,4 @@ Una vez el The moto_ros_interface se suscriba al trajector_msgs\JointTrajectory 
         rosrun ma1400_sim trajectory_control.py
 
 8. Activamos el controlador de posicion:
-        rosrun ma1400_sim position_control.py
+        rosrun ma1400_sim position_control.py 
